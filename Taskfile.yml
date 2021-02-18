@@ -1,0 +1,20 @@
+version: '3'
+
+vars:
+    CURDIR:
+        sh: pwd
+
+
+tasks:
+    default:
+        cmds:
+            - task: copy
+
+    copy:
+        desc: copy ddp app dir to rdmo docker
+        sources:
+            - ddp-app/templatetags/*
+        method: checksum
+        cmds:
+            - cmd: date
+            - cmd: docker cp {{.CURDIR}} rdmo:/home/rdmo/
