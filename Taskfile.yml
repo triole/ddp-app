@@ -17,5 +17,7 @@ tasks:
             - ddp-app/conf.yaml
         method: checksum
         cmds:
-            - cmd: date
-            - cmd: docker cp {{.CURDIR}} rdmo:/home/rdmo/
+            - cmd: sudo docker cp {{.CURDIR}} rdmo:/home/rdmo/
+            - cmd: >
+                sudo docker exec -it rdmo
+                pip install -r /home/rdmo/ddp-app/requirements.txt
