@@ -1,1 +1,4 @@
-base_url: "http://whatever.com"
+base_url: 'http://ddp-content'
+
+# supports 'md' and 'docx'
+content_type: 'md'

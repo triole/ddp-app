@@ -14,6 +14,7 @@ tasks:
         desc: copy ddp app dir to rdmo docker
         sources:
             - ddp-app/templatetags/*
+            - ddp-app/conf.yaml
         method: checksum
         cmds:
             - cmd: date
