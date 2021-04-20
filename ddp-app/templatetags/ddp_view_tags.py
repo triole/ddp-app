@@ -1,18 +1,20 @@
-# import logging
+import logging as logging
 import re
 from os.path import join as pj
 from os.path import realpath
 
 import requests
-import yaml
+import toml
 from django import template
 from django.utils.safestring import mark_safe
 
 import pypandoc
 
-# from urllib import parse
+logging.basicConfig(
+    level=logging.INFO,
+)
+logger = logging.getLogger('ddp_app')
 
-# log = logging.getLogger(__name__)
 register = template.Library()
 
 
@@ -21,27 +23,25 @@ class Conf():
         self.scriptname = realpath(__file__)
         self.scriptdir = '/'.join(self.scriptname.split('/')[:-1])
         self.basedir = re.search(r'.*(?=\/)', self.scriptdir).group(0)
-        self.conf_file = pj(self.basedir, 'conf.yaml')
+        self.conf_file = pj(self.basedir, 'conf.toml')
         self.conf = self.load_config()
 
     def load_config(self):
+        self.log(self.conf_file)
         with open(self.conf_file, 'r') as stream:
             try:
-                r = yaml.safe_load(stream)
-                self.log('Config loaded: ' + str(r))
-                return r
-            except yaml.YAMLError as exc:
-                self.log(exc)
+                data = stream.read()
+                d = toml.loads(data)
+                self.log('Load config :' + str(d))
+                return(d)
+            except Exception as e:
+                raise(e)
 
     def abs_url(self, str):
         if str.startswith('/'):
             str = str[1:]
-        return self.conf_base_url() + self.conf_content_type() + '/' +\
+        return self.conf_base_url() + '/' +\
             str + '.' + self.conf_content_type()
-        # return parse.urljoin(
-        #     self.conf_base_url(), self.conf_content_type() + '/',
-        #     '/' + str + '.' + self.conf_content_type()
-        # )
 
     def conf_base_url(self):
         r = self.conf['base_url']
@@ -52,8 +52,8 @@ class Conf():
     def conf_content_type(self):
         return self.conf['content_type']
 
-    def log(self, str):
-        print('=== DDP Log === ' + str)
+    def log(self, s):
+        logger.info(str(s))
 
 
 c = Conf()
@@ -72,11 +72,11 @@ def request(url):
     r = ''
     furl = c.abs_url(url)
     c.log('Request ' + furl)
-    res = requests.get(furl, auth=('user', 'pass'))
+    res = requests.get(furl)
     if res.status_code == 200:
         r = res.text
     else:
-        c.log('View httpget failed ' + furl + str(res.status_code))
+        c.log('Request failed ' + str(res.status_code) + ': ' + furl)
     return r
 
 
@@ -98,12 +98,11 @@ def serve_docx(filename):
 
 @register.simple_tag(takes_context=False)
 def get(url):
+    c.log(c.conf_content_type())
     if c.conf_content_type() == 'md':
-        c.log('Serve md')
         str = request(url)
         return serve_md(str)
     if c.conf_content_type() == 'docx':
-        c.log('Serve docx')
         tempfile = pj('/tmp/', url + '.docx')
         download_file(url, tempfile)
         return serve_docx(tempfile)

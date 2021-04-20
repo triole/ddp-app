@@ -1,4 +1,0 @@
-base_url: 'http://ddp-content'
-
-# supports 'md' and 'docx'
-content_type: 'md'

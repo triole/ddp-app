@@ -10,7 +10,11 @@ tasks:
             - task: copy
 
     copy:
-        desc: copy ddp app dir to rdmo docker
+        desc: copy ddp app dir to rdmo
+        sources:
+            - ddp-app/templatetags/*
+            - ddp-app/conf.toml
+        method: timestamp
         cmds:
             - cmd: sudo docker cp {{.CURDIR}} rdmo:/home/rdmo/
             - cmd: >
