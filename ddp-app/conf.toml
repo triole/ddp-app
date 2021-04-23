@@ -1,4 +1,4 @@
-base_url = "https://raw.githubusercontent.com/triole/ddp-content/master/content"
+base_url = "http://ddp-content"
 
 # supports md and docx
 content_type = "md"
