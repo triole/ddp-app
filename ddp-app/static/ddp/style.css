@@ -1,0 +1,15 @@
+ol, ul {
+    margin-top: 1.2em;
+}
+
+ol > li p {
+    margin-top: 2em;
+}
+
+ol > li p:first-child {
+    font-weight: 700;
+}
+
+ul > li p {
+    font-weight: unset !important;
+}
