@@ -6,6 +6,10 @@ ol > li p {
     margin-top: 2em;
 }
 
+ol > li:hover {
+    background-color: rgba(51, 122,	183, 0.1);
+}
+
 ol > li p:first-child {
     font-weight: 700;
 }
