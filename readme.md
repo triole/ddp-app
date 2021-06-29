@@ -19,7 +19,7 @@
 	```python
 	sys.path.append('/home/rdmo/ddp-app')
 	INSTALLED_APPS += [
-	    'ddp-app'
+	    'ddpapp'
 	]
 	```
 
