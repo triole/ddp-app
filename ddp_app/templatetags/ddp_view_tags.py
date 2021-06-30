@@ -5,10 +5,10 @@ from os.path import realpath
 
 import requests
 import toml
-from django import template
-from django.utils.safestring import mark_safe
 
 import pypandoc
+from django import template
+from django.utils.safestring import mark_safe
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,7 +32,7 @@ class Conf():
             try:
                 data = stream.read()
                 d = toml.loads(data)
-                self.log('Load config :' + str(d))
+                self.log('Load config: ' + str(d))
                 return(d)
             except Exception as e:
                 raise(e)
@@ -41,7 +41,7 @@ class Conf():
         if str.startswith('/'):
             str = str[1:]
         return self.conf_base_url() + '/' +\
-            str + '.' + self.conf_content_type()
+            str + '.md'
 
     def conf_base_url(self):
         r = self.conf['base_url']
@@ -49,34 +49,22 @@ class Conf():
             r += '/'
         return r
 
-    def conf_content_type(self):
-        return self.conf['content_type']
-
     def log(self, s):
         logger.info(str(s))
 
 
-c = Conf()
-
-
-def download_file(url, tempfile):
-    furl = c.abs_url(url)
-    c.log('Download ' + furl + ' to ' + tempfile)
-    res = requests.get(furl)
-    file = open(tempfile, 'wb')
-    file.write(res.content)
-    file.close
+conf = Conf()
 
 
 def request(url):
     r = ''
-    furl = c.abs_url(url)
-    c.log('Request ' + furl)
+    furl = conf.abs_url(url)
+    conf.log('Request ' + furl)
     res = requests.get(furl)
     if res.status_code == 200:
         r = res.text
     else:
-        c.log('Request failed ' + str(res.status_code) + ': ' + furl)
+        conf.log('Request failed ' + str(res.status_code) + ': ' + furl)
     return r
 
 
@@ -86,23 +74,13 @@ def serve_md(str):
     )
 
 
-def serve_docx(filename):
-    r = ''
-    # if file does not exist, pandoc throws an exception
-    try:
-        r = pypandoc.convert_file(filename, 'html', format='docx')
-    except RuntimeError:
-        pass
-    return mark_safe(r)
-
-
 @register.simple_tag(takes_context=False)
 def get(url):
-    c.log(c.conf_content_type())
-    if c.conf_content_type() == 'md':
-        str = request(url)
-        return serve_md(str)
-    if c.conf_content_type() == 'docx':
-        tempfile = pj('/tmp/', url + '.docx')
-        download_file(url, tempfile)
-        return serve_docx(tempfile)
+    str = request(url)
+    return serve_md(str)
+
+
+@register.inclusion_tag(filename='header.html', takes_context=False)
+def load_frontend_libs():
+    r = requests.get(conf.conf_base_url() + '/header.html')
+    return r.text

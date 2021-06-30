@@ -8,15 +8,18 @@ tasks:
     default:
         cmds:
             - task: copy
+            - task: install_requirements
 
     copy:
         desc: copy ddp app dir to rdmo
         sources:
-            - ddp-app/templatetags/*
-            - ddp-app/conf.toml
+            - ddp-app/**
         method: timestamp
         cmds:
-            - cmd: sudo docker cp {{.CURDIR}} rdmo:/home/rdmo/
+            - cmd: docker cp {{.CURDIR}} rdmo:/home/rdmo/
+
+    install_requirements:
+        cmds:
             - cmd: >
-                sudo docker exec -it rdmo
+                docker exec -it rdmo
                 pip install -r /home/rdmo/ddp-app/requirements.txt

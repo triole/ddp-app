@@ -17,3 +17,21 @@ ol > li p:first-child {
 ul > li p {
     font-weight: unset !important;
 }
+
+/* table style */
+table {
+    border: 1px solid;
+}
+
+thead {
+    color: #fff;
+    background-color: #337ab7;
+}
+
+tbody .even {
+    background-color: #eee;
+}
+
+tbody .odd {
+    background-color: #fff;
+}
